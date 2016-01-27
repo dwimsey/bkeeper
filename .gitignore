@@ -1,0 +1,13 @@
+.DS_Store
+.settings
+target
+.project
+test-output
+logs
+.classpath
+dependency-reduced-pom.xml
+.idea
+*.iml
+*.ipr
+*.iws
+*.ids
