@@ -3,7 +3,7 @@
  * Author: David Wimsey <david@wimsey.us>
  */
 
-package us.wimsey.apiary.queenb;
+package us.wimsey.apiary.apiaryd;
 
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.util.ServerRunner;
@@ -42,27 +42,27 @@ public class DaemonInstance {
 		} catch(UnrecognizedOptionException uoe) {
 			System.err.println("Error with options specified: " + uoe.getMessage());
 			HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp( "queenb", options );
+			formatter.printHelp( "apiaryd", options );
 			return;
 		}
 		if(line.hasOption("help") == true) {
 			HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp( "queenb", options );
+			formatter.printHelp( "apiaryd", options );
 			return;
 		}
 
-		String propertiesFile = "queenb.properties";
+		String propertiesFile = "apiaryd.properties";
 
 		props = new Properties();
 		if(line.hasOption("defaults") == true) {
-			Properties p = PropertyResources.loadPropertiesResourceFile(new Properties(), Paths.get("us", "wimsey", "apiary", "queenb", propertiesFile).toString());
+			Properties p = PropertyResources.loadPropertiesResourceFile(new Properties(), Paths.get("us", "wimsey", "apiary", "apiaryd", propertiesFile).toString());
 			StringWriter writer = new StringWriter();
 			p.list(new PrintWriter(writer));
-			System.out.println("queenb defaults:");
+			System.out.println("apiaryd defaults:");
 			System.out.println(writer.getBuffer().toString());
 			return;
 		} else if(line.hasOption( "nodefaults" ) == false) {
-			props = PropertyResources.loadPropertiesResourceFile(props, Paths.get("us", "wimsey", "apiary", "queenb", propertiesFile).toString());
+			props = PropertyResources.loadPropertiesResourceFile(props, Paths.get("us", "wimsey", "apiary", "apiaryd", propertiesFile).toString());
 			// try to load the file from the users home directory as a .dotfile
 			String home = System.getProperty("user.home");
 			File propsFile = new File(home, "." + propertiesFile);
@@ -76,7 +76,13 @@ public class DaemonInstance {
 			}
 		}
 
-		APIServer apiServer = new APIServer(8888, props);
+		short listenerPort = 8888;
+		if(props.containsKey("port")) {
+			listenerPort = Short.parseShort(props.getProperty("port"));
+
+		}
+
+		APIServer apiServer = new APIServer(listenerPort, props);
 
 		try {
 			apiServer.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
@@ -85,7 +91,7 @@ public class DaemonInstance {
 			System.exit(-1);
 		}
 
-		System.out.println("Server started, Hit Enter to stop.\n");
+		System.out.println("Server started, Hit Enter to stop.  Listening on port " + apiServer.getListeningPort() + ".\n");
 
 		try {
 			System.in.read();

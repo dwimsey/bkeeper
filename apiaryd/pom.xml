@@ -4,13 +4,13 @@
 	<version>0.0.1</version>
 
 	<groupId>us.wimsey.apiary</groupId>
-	<artifactId>queenb</artifactId>
+	<artifactId>apiaryd</artifactId>
 	<packaging>jar</packaging>
 
-	<name>QueenB</name>
+	<name>apiaryd</name>
 
 	<properties>
-		<main.class>us.wimsey.apiary.queenb.DaemonInstance</main.class>
+		<main.class>us.wimsey.apiary.apiaryd.DaemonInstance</main.class>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -32,6 +32,11 @@
 			<groupId>org.nanohttpd</groupId>
 			<artifactId>nanohttpd</artifactId>
 			<version>2.2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.nanohttpd</groupId>
+			<artifactId>nanohttpd-nanolets</artifactId>
+			<version>2.3.0</version>
 		</dependency>
 	</dependencies>
 	<build>
