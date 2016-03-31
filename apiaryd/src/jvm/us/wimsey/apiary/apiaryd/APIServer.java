@@ -4,7 +4,7 @@ import java.util.Properties;
 
 
 import fi.iki.elonen.router.RouterNanoHTTPD;
-import us.wimsey.apiary.apiaryd.cmdlets.PingHandler;
+import us.wimsey.apiary.apiaryd.restlets.PingHandler;
 
 /**
  * Created by dwimsey on 1/25/16.

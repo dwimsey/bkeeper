@@ -1,4 +1,4 @@
-package us.wimsey.apiary.apiaryd.cmdlets;
+package us.wimsey.apiary.apiaryd.restlets;
 
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.router.RouterNanoHTTPD;
