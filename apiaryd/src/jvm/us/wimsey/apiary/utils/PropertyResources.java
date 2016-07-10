@@ -72,7 +72,7 @@ public class PropertyResources {
 		if(existingProperties == null) {
 			prop = new Properties();
 		} else {
-			prop = new Properties(existingProperties);
+			prop = (Properties)existingProperties.clone();
 		}
 
 		// load a properties file
