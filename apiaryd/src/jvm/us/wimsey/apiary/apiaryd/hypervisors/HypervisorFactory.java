@@ -1,6 +1,8 @@
 package us.wimsey.apiary.apiaryd.hypervisors;
 
 import com.sun.javaws.exceptions.InvalidArgumentException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Properties;
 
@@ -8,7 +10,9 @@ import java.util.Properties;
  * Created by dwimsey on 7/9/16.
  */
 public class HypervisorFactory {
-    public enum BuiltinHypervisorTypes {
+	private static final Logger logger = LogManager.getLogger(HypervisorFactory.class);
+
+	public enum BuiltinHypervisorTypes {
         bhyve ((short)1),
         xhyve ((short)2);
 
