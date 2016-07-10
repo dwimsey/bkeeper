@@ -77,13 +77,15 @@ public class DaemonInstance {
 		}
 
 		short listenerPort = 8888;
-		if(props.containsKey("port")) {
-			listenerPort = Short.parseShort(props.getProperty("port"));
+		if(props.containsKey("apiaryd.http.port")) {
+			listenerPort = Short.parseShort(props.getProperty("apiaryd.http.port"));
 
 		}
 
-		APIServer apiServer = new APIServer(listenerPort, props);
+		VMMonitor vmMonitor = new VMMonitor(props);
+		APIServer apiServer = new APIServer(listenerPort, props, vmMonitor);
 
+		vmMonitor.start();
 		try {
 			apiServer.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
 		} catch (IOException ioe) {
@@ -99,6 +101,9 @@ public class DaemonInstance {
 		}
 
 		apiServer.stop();
-		System.out.println("Server stopped.\n");
+		System.out.println("API Server stopped.\n");
+
+		// We'll shut down the vm's depending on a sigterm or sighup
+		vmMonitor.shutdown(false);
 	}
 }
