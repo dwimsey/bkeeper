@@ -2,6 +2,7 @@ package us.wimsey.apiary.apiaryd.hypervisors;
 
 import us.wimsey.apiary.apiaryd.virtualmachines.IVMState;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -10,6 +11,7 @@ import java.util.List;
 public interface IHypervisor {
 	// Create a IVMState object from a VM configuration file
 	public IVMState registerVm(String URL);
+	public IVMState registerVm(File xmlfile);
 
     public String getHypervisorName();
 	public List<String> getVMList();

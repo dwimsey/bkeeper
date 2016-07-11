@@ -2,11 +2,9 @@ package us.wimsey.apiary.apiaryd.hypervisors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import us.wimsey.apiary.apiaryd.virtualmachines.IVMState;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.List;
+import java.io.File;
 import java.util.Properties;
 
 /**
@@ -18,5 +16,20 @@ public class XhyveHypervisorDriver extends GenericHypervisor {
 	public XhyveHypervisorDriver(Properties hypervisorInitializationProperties)
 	{
 		super(hypervisorInitializationProperties);
+	}
+
+	@Override
+	public IVMState registerVm(String URL) {
+		return registerVm(new File(URL));
+	}
+
+	@Override
+	public IVMState registerVm(File URL) {
+		return null;
+	}
+
+	@Override
+	public IVMState create(String vmTemplateName) {
+		return null;
 	}
 }

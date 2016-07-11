@@ -3,14 +3,12 @@ package us.wimsey.apiary.apiaryd.hypervisors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import us.wimsey.apiary.apiaryd.VirtualMachineRunner;
-import us.wimsey.apiary.apiaryd.virtualmachines.GenericVMState;
 import us.wimsey.apiary.apiaryd.virtualmachines.IVMState;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -23,7 +21,6 @@ public class BhyveHypervisorDriver extends GenericHypervisor {
 
 	public static IVMState createVm(String vmName)
 	{
-		IVMState =
 		return null;
 	}
 
@@ -95,102 +92,9 @@ public class BhyveHypervisorDriver extends GenericHypervisor {
 			throw new IllegalArgumentException("vmTemplateName can not be empty.");
 		}
 
-		IVMState newVm = new GenericVMState() {
-			@Override
-			public boolean getGenerateAPICTables() {
-				return false;
-			}
+		IVMState newVm = null;
 
-			@Override
-			public boolean getDumpGetMemWithCore() {
-				return false;
-			}
-
-			@Override
-			public boolean getHVMExitOnUnemulatedIOPort() {
-				return false;
-			}
-
-			@Override
-			public short getGDBPort() {
-				return 0;
-			}
-
-			@Override
-			public boolean getYieldCPUOnHLT() {
-				return true;
-			}
-
-			@Override
-			public boolean getHVMExitOnPAUSE() {
-				return false;
-			}
-
-			@Override
-			public boolean getWireGuestMemory() {
-				return false;
-			}
-
-			@Override
-			public boolean getRTCisUTC() {
-				return false;
-			}
-
-			@Override
-			public boolean getIgnoreMissingMSRs() {
-				return false;
-			}
-
-			@Override
-			public boolean getForceVirtIOToUseMSI() {
-				return false;
-			}
-
-			@Override
-			public boolean getAPICx2Mode() {
-				return false;
-			}
-
-			@Override
-			public boolean getMPTableDisabled() {
-				return false;
-			}
-
-			@Override
-			public int[][] getCpuPinMap() {
-				return new int[0][];
-			}
-
-			@Override
-			public void setCpuPinMap(int[][] newPinMap) {
-
-			}
-
-			@Override
-			public void powerOn() {
-
-			}
-
-			@Override
-			public void powerOff(float gracePeriod) {
-
-			}
-
-			@Override
-			public void reset() {
-
-			}
-
-			@Override
-			public VMRuntimeState getRuntimeState() {
-				return null;
-			}
-
-			@Override
-			public void save(String s) {
-
-			}
-		}
+		return newVm;
 	}
 
 	public void startVM(VirtualMachineRunner vmRunner)
@@ -198,9 +102,13 @@ public class BhyveHypervisorDriver extends GenericHypervisor {
 
 	}
 
-	public IVMState registerVm(String URL)
-	{
+	@Override
+	public IVMState registerVm(String URL) {
+		return registerVm(new File(URL));
+	}
 
+	@Override
+	public IVMState registerVm(File URL) {
 		return null;
 	}
 }

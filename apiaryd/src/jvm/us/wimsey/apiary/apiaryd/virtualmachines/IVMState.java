@@ -6,11 +6,16 @@ import java.util.UUID;
  * Created by dwimsey on 7/10/16.
  */
 public interface IVMState {
+	public String getVmClass();
+	public void setVmClass(String className);
+
 	public String getVMName();
 	public String getConfigurationUri();
 
+	public boolean canHotAddCpus();
 	public int getCpuCount();					// -c 2
 	public void setCpuCount(int numberOfCpus);
+	public boolean canHotAddRam();
 	public int getRam();						// -m size[K|k|M|m|G|g|T|t]
 	public void setRam(int sizeInMegabytes);
 
@@ -39,11 +44,15 @@ public interface IVMState {
 	void save(String s);
 
 	public enum VMRuntimeState {
-		Off (0),
-		Starting (1),
-		Stopping (2),
+		Initializing(0),
+		Off (10),
+		//Starting (20),
+		Running (30),
+		//Suspending (40),
+		//Suspended (50),
+		//Stopping (60),
 		ConfigurationInvalid(98),
-		Crashed(99);
+		Zombie(99);
 
 		final private int runtimeState;
 		VMRuntimeState(int _runtimeState)

@@ -109,8 +109,8 @@ public class DaemonInstance {
 
 		if(vmf == null) {
 			//vmf = vmMonitor.register("/mnt/vm-nfs-01/bhyve/vdc-02.wimsey.us/vdc-02.wimsey.us.apiary");
-			vmf = vmMonitor.create("windows");
-			vmf.save("/mnt/vm-nfs-01/bhyve/vdc-02.wimsey.us/vdc-02.wimsey.us.apiary")
+			vmf = vmMonitor.create("uefi");
+			vmf.save("/mnt/vm-nfs-01/bhyve/vdc-02.wimsey.us/vdc-02.wimsey.us.apiary");
 		}
 		//if(vmf.isRunning() == false) {
 		//	vmf.start();

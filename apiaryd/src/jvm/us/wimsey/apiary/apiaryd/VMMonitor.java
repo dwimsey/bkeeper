@@ -12,6 +12,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
+import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
@@ -54,6 +56,24 @@ public class VMMonitor {
 			localHypervisor = HypervisorFactory.getLocalHypervisor(apiaryProperties);
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+
+		String vmRegistryPath = "/usr/local/apiary/virtualmachines";
+		if(apiaryProperties.containsKey("apiaryd.vmregistry.path") == true) {
+			vmRegistryPath = apiaryProperties.getProperty("apiaryd.vmregistry.path");
+		}
+		File dir = new File(vmRegistryPath);
+		File [] files = dir.listFiles(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String name) {
+				// the toLowerCase() means we don't care about the case of the extention effectively, when matching.
+				return name.toLowerCase().endsWith(".vmxml");
+			}
+		});
+
+		for (File xmlfile : files) {
+			// Load up the registered VMs from their config files.
+			localHypervisor.registerVm(xmlfile);
 		}
 
 		/*
