@@ -2,11 +2,16 @@ package us.wimsey.apiary.apiaryd.hypervisors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.w3c.dom.Node;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import us.wimsey.apiary.apiaryd.virtualmachines.IVMDevice;
+import us.wimsey.apiary.apiaryd.virtualmachines.VMDeviceFactory;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -14,6 +19,8 @@ import java.util.Properties;
  */
 public abstract class GenericHypervisor implements IHypervisor {
 	private static final Logger logger = LogManager.getLogger(GenericHypervisor.class);
+
+	protected Map<String, VMDeviceFactory> deviceFactories = new HashMap<String, VMDeviceFactory>();
 
 	final protected Properties _props;
 	public GenericHypervisor(Properties hypervisorInitializationProperties)
@@ -43,5 +50,22 @@ public abstract class GenericHypervisor implements IHypervisor {
 	{
 	}
 
+	public IVMDevice parseDevice(Node devNode) {
+		IVMDevice newDevice = null;
+		Node busTypeNode = devNode.getAttributes().getNamedItem("bustype");
+		String busType = "pci";
+		if(busTypeNode != null) {
+			if(busType.equals(busTypeNode.getNodeValue()) == false) {
+				throw new IllegalArgumentException("Only 'pci' is currently supported for bustype.");
+			}
+		}
 
+		String deviceClass = devNode.getNodeName();
+		if(deviceFactories.containsKey(deviceClass) == true) {
+			// We have a factory for this class, lets create it
+			VMDeviceFactory df = deviceFactories.get(deviceClass);
+			newDevice = df.parseDeviceNode(devNode);
+		}
+		return newDevice;
+	}
 }

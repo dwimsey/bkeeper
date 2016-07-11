@@ -1,188 +1,357 @@
 package us.wimsey.apiary.apiaryd.virtualmachines;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import us.wimsey.apiary.apiaryd.hypervisors.IHypervisor;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.UUID;
 
 /**
  * Created by dwimsey on 7/10/16.
  */
 public abstract class GenericVMState implements IVMState {
-	final private UUID _SMBUUID;
-	private VMRuntimeState _runtimeState;
-	protected GenericVMState(String newVMName)
+	private static final Logger logger = LogManager.getLogger(GenericVMState.class);
+
+	protected UUID _SMBUUID;
+	protected GenericVMState()
 	{
 		_SMBUUID = UUID.randomUUID();
 		// Until more is done, the VM configuration is invalid, this is okay for now, not
 		// really an error just a statement of fact.
-		_runtimeState = VMRuntimeState.Initializing;
-		_vmName = newVMName;
-
 		validateConfig();
 	}
 
 	private void validateConfig()
 	{
 
-		if(_runtimeState == VMRuntimeState.Initializing) {
-			_runtimeState = VMRuntimeState.Off;
-		}
 	}
-	@Override
-	public UUID getUUID() {
+
+	public UUID getUuid() {
 		return _SMBUUID;
 	}
 
-	@Override
+	public void setUuid(UUID newUUID) { _SMBUUID = newUUID; }
+
 	public boolean getIgnoreMissingMSRs() {
-		return false;
+		return true;
 	}
 
-	@Override
 	public boolean getForceVirtIOToUseMSI() {
 		return false;
 	}
 
-	@Override
 	public boolean getAPICx2Mode() {
 		return false;
 	}
 
-	@Override
 	public boolean getMPTableDisabled() {
 		return false;
 	}
 
-	@Override
 	public int[][] getCpuPinMap() {
 		return new int[0][];
 	}
 
-	@Override
 	public void setCpuPinMap(int[][] newPinMap) {
-
+		throw new NotImplementedException();
 	}
 
-	@Override
-	public void powerOn() {
-
-	}
-
-	@Override
-	public void powerOff(float gracePeriod) {
-
-	}
-
-	@Override
-	public void reset() {
-
-	}
-
-	@Override
-	public VMRuntimeState getRuntimeState() {
-		return null;
-	}
-
-	@Override
 	public void save(String s) {
 
 	}
 
-	private String _vmName = null;
+	protected String _vmName = null;
 
-	@Override
 	public String getVmClass() {
 		return null;
 	}
 
-	@Override
 	public void setVmClass(String className) {
 
 	}
 
-	public String getVMName()
+	public String getVmName()
 	{
 		return _vmName;
 	}
 
-	String _configurationSourceUrl = null;
+	public void setVmName(String newVmName)
+	{
+		_vmName = newVmName;
+	}
+
+	protected String _configurationSourceUrl = null;
 	public String getConfigurationUri()
 	{
 		return _configurationSourceUrl;
 	}
 
-	private boolean _canHotAddCpus = false;
+	protected boolean _canHotAddCpus = false;
 	public boolean canHotAddCpus() { return _canHotAddCpus; }
-	private int _cpuCount;
+	protected int _cpuCount;
 	public int getCpuCount()
 	{
 		return _cpuCount;
 	}
 	public void setCpuCount(int numberOfCpus)
 	{
-
-		if(_runtimeState == VMRuntimeState.Off || this.getRuntimeState() == VMRuntimeState.ConfigurationInvalid || this.getRuntimeState() == VMRuntimeState.Initializing) {
+		if(this.getRuntimeState() == VMRuntimeState.Off || this.getRuntimeState() == VMRuntimeState.ConfigurationInvalid || this.getRuntimeState() == VMRuntimeState.Initializing) {
 			_cpuCount = numberOfCpus;
 		}
 	}
 	// -m size[K|k|M|m|G|g|T|t]
 
 
-	private boolean _canHotAddRam = false;
+	protected boolean _canHotAddRam = false;
 	public boolean canHotAddRam()
 	{
 		return _canHotAddRam;
 	}
-	int _memorySize;	// in bytes, HVM may not support this granularity and will complain or adjust on its own if not properly aligned on a block boundry
-	public int getRam()
+	protected long _memorySize;	// in bytes, HVM may not support this granularity and will complain or adjust on its own if not properly aligned on a block boundry
+	public long getMemory()
 	{
-		return _memorySize / (1024*1024);
+		return _memorySize;
 	}
-	public void setRam(int sizeInMegabytes)
+	public void setMemory(long sizeInMegabytes)
 	{
-		_memorySize = sizeInMegabytes * (1024 * 1024);
+		if(this.getRuntimeState() == VMRuntimeState.Off || this.getRuntimeState() == VMRuntimeState.ConfigurationInvalid || this.getRuntimeState() == VMRuntimeState.Initializing) {
+			_memorySize = sizeInMegabytes;
+		}
 	}
 
-	@Override
-	public boolean getGenerateAPICTables() {
-		return false;
-	}
 
-	@Override
-	public boolean getDumpGetMemWithCore() {
-		return false;
-	}
-
-	@Override
-	public boolean getHVMExitOnUnemulatedIOPort() {
-		return false;
-	}
-
-	@Override
-	public short getGDBPort() {
-		return 0;
-	}
-
-	@Override
-	public boolean getYieldCPUOnHLT() {
-		return false;
-	}
-
-	@Override
-	public boolean getHVMExitOnPAUSE() {
-		return false;
-	}
-
-	@Override
+	protected boolean _wireGuestMemory = false;
 	public boolean getWireGuestMemory() {
-		return false;
+		return _wireGuestMemory;
+	}
+	public void setWireGuestMemory(boolean wireGuestMemory) {
+		_wireGuestMemory = wireGuestMemory;
 	}
 
-	@Override
+	protected boolean _rtcIsUTC = false;
 	public boolean getRTCisUTC() {
-		return false;
+		return _rtcIsUTC;
+	}
+	public void setRTCisUTC(boolean isUTC) {
+		_rtcIsUTC = isUTC;
 	}
 
 	void load(String configurationFileURL)
 	{
+
+	}
+
+	public static void loadFile(File url, IVMState bvmState, IHypervisor hvm) {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = null;
+		try {
+			builder = factory.newDocumentBuilder();
+		} catch (ParserConfigurationException e) {
+			logger.error(e);
+			return;
+		}
+
+		org.w3c.dom.Document doc = null;
+		try {
+			doc = builder.parse(url);
+		} catch (SAXException e) {
+			logger.error(e);
+			//bvmState.setRuntimeState(VMRuntimeState.ConfigurationInvalid);
+			return;
+		} catch (IOException e) {
+			logger.error(e);
+			return;
+		}
+		XPathFactory xPathfactory = XPathFactory.newInstance();
+		XPath xpath = xPathfactory.newXPath();
+		XPathExpression expr = null;
+		try {
+			expr = xpath.compile("//VirtualMachine/@name");
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		}
+		String vmName = "";
+		try {
+			vmName = (String) expr.evaluate(doc, XPathConstants.STRING);
+			logger.debug("vmName: " + vmName);
+
+		} catch (XPathExpressionException e) {
+			logger.error(e);
+			//bvmState.setRuntimeState(VMRuntimeState.ConfigurationInvalid);
+		}
+
+		bvmState.setVmName(vmName);
+
+		try {
+			expr = xpath.compile("//VirtualMachine/@osClass");
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		}
+		String osClass = "none";
+		try {
+			osClass = (String) expr.evaluate(doc, XPathConstants.STRING);
+			if(osClass == null) {
+				osClass = "";
+			}
+			if(osClass.isEmpty()) {
+				// The default for now
+				osClass = "uefi";
+				logger.debug("osClass: " + osClass + " (default)");
+			} else {
+				logger.debug("osClass: " + osClass);
+			}
+		} catch (XPathExpressionException e) {
+			logger.error(e);
+			//bvmState.setRuntimeState(VMRuntimeState.ConfigurationInvalid);
+		}
+
+		bvmState.setVmClass(osClass);
+
+		try {
+			expr = xpath.compile("//VirtualMachine/UUID");
+		} catch (XPathExpressionException e) {
+			logger.error(e);
+			//bvmState.setRuntimeState(VMRuntimeState.ConfigurationInvalid);
+		}
+		UUID newUuid = UUID.randomUUID();
+		try {
+			newUuid = UUID.fromString((String) expr.evaluate(doc, XPathConstants.STRING));
+			logger.debug("uuid: " + newUuid.toString());
+		} catch (XPathExpressionException e) {
+			logger.error(e);
+			//bvmState.setRuntimeState(VMRuntimeState.ConfigurationInvalid);
+		}
+
+		bvmState.setUuid(newUuid);
+
+		try {
+			expr = xpath.compile("//VirtualMachine/cpus/@count");
+		} catch (XPathExpressionException e) {
+			logger.error(e);
+			//bvmState.setRuntimeState(VMRuntimeState.ConfigurationInvalid);
+		}
+		int cpuCount = 1;
+		try {
+			cpuCount = Integer.parseInt((String) expr.evaluate(doc, XPathConstants.STRING));
+			logger.debug("cpuCount: " + cpuCount);
+		} catch (XPathExpressionException e) {
+			logger.error(e);
+			//bvmState.setRuntimeState(VMRuntimeState.ConfigurationInvalid);
+		}
+
+		bvmState.setCpuCount(cpuCount);
+
+		try {
+			expr = xpath.compile("//VirtualMachine/cpus/@hotAddEnabled");
+		} catch (XPathExpressionException e) {
+			logger.error(e);
+			//bvmState.setRuntimeState(VMRuntimeState.ConfigurationInvalid);
+		}
+		boolean hotAddEnabled = false;
+		try {
+			hotAddEnabled = Boolean.parseBoolean((String) expr.evaluate(doc, XPathConstants.STRING));
+			logger.debug("hotAddCpuEnabled: " + hotAddEnabled);
+		} catch (XPathExpressionException e) {
+			logger.error(e);
+			//bvmState.setRuntimeState(VMRuntimeState.ConfigurationInvalid);
+		}
+
+		try {
+			expr = xpath.compile("//VirtualMachine/memory/@size");
+		} catch (XPathExpressionException e) {
+			logger.error(e);
+			//bvmState.setRuntimeState(VMRuntimeState.ConfigurationInvalid);
+		}
+		long memorySize = 1;
+		try {
+			memorySize = Long.parseLong((String) expr.evaluate(doc, XPathConstants.STRING));
+			logger.debug("memorySize: " + memorySize);
+		} catch (XPathExpressionException e) {
+			logger.error(e);
+			//bvmState.setRuntimeState(VMRuntimeState.ConfigurationInvalid);
+		}
+
+		// Adjust to megabytes, thats what our API expects currently
+		bvmState.setMemory(memorySize);
+
+		try {
+			expr = xpath.compile("//VirtualMachine/memory/@hotAddEnabled");
+		} catch (XPathExpressionException e) {
+			logger.error(e);
+			//bvmState.setRuntimeState(VMRuntimeState.ConfigurationInvalid);
+		}
+		hotAddEnabled = false;
+		try {
+			hotAddEnabled = Boolean.parseBoolean((String) expr.evaluate(doc, XPathConstants.STRING));
+			logger.debug("hotAddMemoryEnabled: " + hotAddEnabled);
+		} catch (XPathExpressionException e) {
+			logger.error(e);
+			//bvmState.setRuntimeState(VMRuntimeState.ConfigurationInvalid);
+		}
+
+		try {
+			expr = xpath.compile("//VirtualMachine/RTC/@isUTC");
+		} catch (XPathExpressionException e) {
+			logger.error(e);
+			//bvmState.setRuntimeState(VMRuntimeState.ConfigurationInvalid);
+		}
+		boolean isUTC = false;
+		try {
+			isUTC = Boolean.parseBoolean((String) expr.evaluate(doc, XPathConstants.STRING));
+			logger.debug("RTCisUTC: " + isUTC);
+		} catch (XPathExpressionException e) {
+			logger.error(e);
+			//bvmState.setRuntimeState(VMRuntimeState.ConfigurationInvalid);
+		}
+		bvmState.setRTCisUTC(isUTC);
+
+
+		try {
+			expr = xpath.compile("//VirtualMachine/Devices/child::*");
+		} catch (XPathExpressionException e) {
+			logger.error(e);
+			//bvmState.setRuntimeState(VMRuntimeState.ConfigurationInvalid);
+		}
+		NodeList deviceNodes = null;
+		try {
+			deviceNodes = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+			Node devNode;
+			int devLength = deviceNodes.getLength();
+			IVMDevice tmpDevice;
+			logger.debug("Devices Configured: " + devLength);
+
+			for(int i = 0; i < devLength; i++) {
+				devNode = deviceNodes.item(i);
+				IVMDevice hvmDevice = hvm.parseDevice(devNode);
+				logger.warn("New device: " + hvmDevice.toString());
+			}
+		} catch (XPathExpressionException e) {
+			logger.error(e);
+			//bvmState.setRuntimeState(VMRuntimeState.ConfigurationInvalid);
+		}
+
+
+
+		/*
+		public boolean getGenerateAPICTables();		// -A
+		public boolean getDumpGetMemWithCore();		// -C
+		public boolean getHVMExitOnUnemulatedIOPort();	// -e
+		public short getGDBPort();					// -g <port>
+		public boolean getYieldCPUOnHLT();			// -H (If false, vm will use 100% CPU)
+		public boolean getHVMExitOnPAUSE();			// -P
+		public boolean getWireGuestMemory();		// -S
+		public boolean getRTCisUTC();				// -u
+		*/
 
 	}
 }

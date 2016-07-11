@@ -1,7 +1,8 @@
-package us.wimsey.apiary.apiaryd.hypervisors;
+package us.wimsey.apiary.apiaryd.hypervisors.xhyve;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import us.wimsey.apiary.apiaryd.hypervisors.GenericHypervisor;
 import us.wimsey.apiary.apiaryd.virtualmachines.IVMState;
 
 import java.io.File;

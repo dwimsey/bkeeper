@@ -9,15 +9,18 @@ public interface IVMState {
 	public String getVmClass();
 	public void setVmClass(String className);
 
-	public String getVMName();
+	public String getVmName();
+
+	void setVmName(String newVmName);
+
 	public String getConfigurationUri();
 
 	public boolean canHotAddCpus();
 	public int getCpuCount();					// -c 2
 	public void setCpuCount(int numberOfCpus);
 	public boolean canHotAddRam();
-	public int getRam();						// -m size[K|k|M|m|G|g|T|t]
-	public void setRam(int sizeInMegabytes);
+	public long getMemory();						// -m size[K|k|M|m|G|g|T|t]
+	public void setMemory(long sizeInBytes);
 
 	public boolean getGenerateAPICTables();		// -A
 	public boolean getDumpGetMemWithCore();		// -C
@@ -27,7 +30,9 @@ public interface IVMState {
 	public boolean getHVMExitOnPAUSE();			// -P
 	public boolean getWireGuestMemory();		// -S
 	public boolean getRTCisUTC();				// -u
-	public UUID getUUID();					// -U <UUID>
+	public void setRTCisUTC(boolean isUTC);		// -u
+	public UUID getUuid();						// -U <UUID>
+	void setUuid(UUID newUuid);					// -U <UUID>
 	public boolean getIgnoreMissingMSRs();		// -w (Required for Windows currently)
 	public boolean getForceVirtIOToUseMSI();	// -W
 	public boolean getAPICx2Mode();				// -x
@@ -42,7 +47,7 @@ public interface IVMState {
 	public VMRuntimeState getRuntimeState();
 
 	void save(String s);
-
+	void validateConfiguration();
 	public enum VMRuntimeState {
 		Initializing(0),
 		Off (10),

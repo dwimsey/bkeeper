@@ -1,8 +1,10 @@
-package us.wimsey.apiary.apiaryd.hypervisors;
+package us.wimsey.apiary.apiaryd.hypervisors.bhyve;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import us.wimsey.apiary.apiaryd.VirtualMachineRunner;
+import us.wimsey.apiary.apiaryd.hypervisors.GenericHypervisor;
+import us.wimsey.apiary.apiaryd.virtualmachines.GenericVMState;
 import us.wimsey.apiary.apiaryd.virtualmachines.IVMState;
 
 import java.io.BufferedReader;
@@ -37,6 +39,13 @@ public class BhyveHypervisorDriver extends GenericHypervisor {
 				shellCmd = sshShellCmd.replace("${REMOTE}", sshUri).replace("${SSH_OPTIONS}", "");
 			}
 		}
+
+		deviceFactories.put("lpc", new LPCBridgeFactory());
+		deviceFactories.put("hostbridge", new PCIHostbridgeFactory());
+		deviceFactories.put("ahci-hd", new PCIAHCIHDFactory());
+		deviceFactories.put("virtio-net", new PCIVirtIONetFactory());
+		deviceFactories.put("virtio-blk", new PCIVirtIOBlockFactory());
+		deviceFactories.put("virtio-rnd", new PCIVirtIORandomFactory());q
 	}
 
 	private String sshShellCmd = "ssh ${SSH_OPTIONS} ${REMOTE} ${SHELLCMD}";
@@ -109,6 +118,9 @@ public class BhyveHypervisorDriver extends GenericHypervisor {
 
 	@Override
 	public IVMState registerVm(File URL) {
-		return null;
+		BhyveVMState bvmState = new BhyveVMState();
+		GenericVMState.loadFile(URL, bvmState, this);
+
+		return bvmState;
 	}
 }

@@ -2,6 +2,8 @@ package us.wimsey.apiary.apiaryd;
 
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.router.RouterNanoHTTPD;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import us.wimsey.apiary.apiaryd.restlets.PingHandler;
 import us.wimsey.apiary.apiaryd.restlets.RestletBase;
 
@@ -13,7 +15,7 @@ import java.util.Properties;
  * Created by dwimsey on 1/25/16.
  */
 public class APIServer extends RouterNanoHTTPD {
-	public static org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(APIServer.class);
+	private static final Logger logger = LogManager.getLogger(APIServer.class);
 
 	Properties _properties = null;
 	VMMonitor _vmMonitor = null;
