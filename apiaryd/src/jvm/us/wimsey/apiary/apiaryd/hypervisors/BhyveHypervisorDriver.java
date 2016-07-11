@@ -2,6 +2,9 @@ package us.wimsey.apiary.apiaryd.hypervisors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import us.wimsey.apiary.apiaryd.VirtualMachineRunner;
+import us.wimsey.apiary.apiaryd.virtualmachines.GenericVMState;
+import us.wimsey.apiary.apiaryd.virtualmachines.IVMState;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,6 +20,12 @@ import java.util.Properties;
  */
 public class BhyveHypervisorDriver extends GenericHypervisor {
 	private static final Logger logger = LogManager.getLogger(BhyveHypervisorDriver.class);
+
+	public static IVMState createVm(String vmName)
+	{
+		IVMState =
+		return null;
+	}
 
 	public BhyveHypervisorDriver(Properties hypervisorInitializationProperties)
 	{
@@ -73,5 +82,125 @@ public class BhyveHypervisorDriver extends GenericHypervisor {
 		}
 
 		return vmList;
+	}
+
+	@Override
+	public IVMState create(String vmTemplateName) {
+		if(vmTemplateName == null) {
+			throw new IllegalArgumentException("vmTemplateName can not be NULL.");
+		}
+
+		vmTemplateName = vmTemplateName.trim();
+		if(vmTemplateName.isEmpty() == true) {
+			throw new IllegalArgumentException("vmTemplateName can not be empty.");
+		}
+
+		IVMState newVm = new GenericVMState() {
+			@Override
+			public boolean getGenerateAPICTables() {
+				return false;
+			}
+
+			@Override
+			public boolean getDumpGetMemWithCore() {
+				return false;
+			}
+
+			@Override
+			public boolean getHVMExitOnUnemulatedIOPort() {
+				return false;
+			}
+
+			@Override
+			public short getGDBPort() {
+				return 0;
+			}
+
+			@Override
+			public boolean getYieldCPUOnHLT() {
+				return true;
+			}
+
+			@Override
+			public boolean getHVMExitOnPAUSE() {
+				return false;
+			}
+
+			@Override
+			public boolean getWireGuestMemory() {
+				return false;
+			}
+
+			@Override
+			public boolean getRTCisUTC() {
+				return false;
+			}
+
+			@Override
+			public boolean getIgnoreMissingMSRs() {
+				return false;
+			}
+
+			@Override
+			public boolean getForceVirtIOToUseMSI() {
+				return false;
+			}
+
+			@Override
+			public boolean getAPICx2Mode() {
+				return false;
+			}
+
+			@Override
+			public boolean getMPTableDisabled() {
+				return false;
+			}
+
+			@Override
+			public int[][] getCpuPinMap() {
+				return new int[0][];
+			}
+
+			@Override
+			public void setCpuPinMap(int[][] newPinMap) {
+
+			}
+
+			@Override
+			public void powerOn() {
+
+			}
+
+			@Override
+			public void powerOff(float gracePeriod) {
+
+			}
+
+			@Override
+			public void reset() {
+
+			}
+
+			@Override
+			public VMRuntimeState getRuntimeState() {
+				return null;
+			}
+
+			@Override
+			public void save(String s) {
+
+			}
+		}
+	}
+
+	public void startVM(VirtualMachineRunner vmRunner)
+	{
+
+	}
+
+	public IVMState registerVm(String URL)
+	{
+
+		return null;
 	}
 }

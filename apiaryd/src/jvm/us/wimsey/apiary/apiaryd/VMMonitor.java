@@ -2,9 +2,17 @@ package us.wimsey.apiary.apiaryd;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.xml.sax.SAXException;
 import us.wimsey.apiary.apiaryd.hypervisors.HypervisorFactory;
 import us.wimsey.apiary.apiaryd.hypervisors.IHypervisor;
+import us.wimsey.apiary.apiaryd.virtualmachines.IVMState;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
+import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
@@ -14,7 +22,7 @@ import java.util.Properties;
 public class VMMonitor {
 	private static final Logger logger = LogManager.getLogger(VMMonitor.class);
 
-	List<VirtualMachineRunner> virtualMachines = null;
+	List<IVMState> virtualMachines = null;
 
 	private Properties apiaryProperties;
 	private float shutdownGracePeriod;
@@ -33,6 +41,7 @@ public class VMMonitor {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
+				logger.warn("Exercising apiary shutdown manager hook.");
 				if(localHypervisor != null) {
 					localHypervisor.shutdown(shutdownGracePeriod);
 				}
@@ -47,16 +56,56 @@ public class VMMonitor {
 			e.printStackTrace();
 		}
 
+		/*
 		// Attempt to reconnect with any apiary VMs that may have been left running because apiaryd crashed
 		List<String> vms = localHypervisor.getVMList();
 		vms.forEach((vm)-> {
 			logger.warn("Existing VM encountered: " + vm);
 			if(vm.startsWith("apiary_") == true) {
 				logger.warn("Found apiary vm, checking state ...");
+
 			}
 		});
+		*/
 	}
 
 	public void shutdown(Boolean killRemainingVMs) {
+	}
+
+	public IVMState register(String s) {
+		IVMState newVm = null;
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = null;
+		try {
+			builder = factory.newDocumentBuilder();
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+			return null;
+		}
+
+		org.w3c.dom.Document doc = null;
+		try {
+			doc = builder.parse(s);
+		} catch (SAXException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		XPathFactory xPathfactory = XPathFactory.newInstance();
+		XPath xpath = xPathfactory.newXPath();
+		//XPathExpression expr = xpath.compile(<xpath_expression>);
+
+		//newVm = create(vmTemplateName);
+
+		if(newVm != null) {
+			virtualMachines.add(newVm);
+		}
+		return newVm;
+	}
+
+	public IVMState create(String vmTemplateName) {
+		IVMState newVm = null;
+		newVm = localHypervisor.create(vmTemplateName);
+		return newVm;
 	}
 }

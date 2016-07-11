@@ -6,12 +6,12 @@
 package us.wimsey.apiary.apiaryd;
 
 import fi.iki.elonen.NanoHTTPD;
-import fi.iki.elonen.util.ServerRunner;
 import org.apache.commons.cli.*;
-import org.apache.log4j.Logger;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Level;
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import us.wimsey.apiary.apiaryd.virtualmachines.IVMState;
 import us.wimsey.apiary.utils.PropertyResources;
 
 import java.io.File;
@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Properties;
 
 public class DaemonInstance {
 	private static final Logger LOG = Logger.getLogger(DaemonInstance.class);
@@ -95,6 +95,40 @@ public class DaemonInstance {
 
 		System.out.println("Server started, Hit Enter to stop.  Listening on port " + apiServer.getListeningPort() + ".\n");
 
+		IVMState vmf = null;
+		boolean foundVm = false;
+		int is = vmMonitor.virtualMachines.size();
+		for (int i = 0; i < is; i++) {
+			vmf = vmMonitor.virtualMachines.get(i);
+			if("vdc-02.wimsey.us".equals(vmf.getVMName()) == true) {
+				break;
+			} else {
+				vmf = null;
+			}
+		}
+
+		if(vmf == null) {
+			//vmf = vmMonitor.register("/mnt/vm-nfs-01/bhyve/vdc-02.wimsey.us/vdc-02.wimsey.us.apiary");
+			vmf = vmMonitor.create("windows");
+			vmf.save("/mnt/vm-nfs-01/bhyve/vdc-02.wimsey.us/vdc-02.wimsey.us.apiary")
+		}
+		//if(vmf.isRunning() == false) {
+		//	vmf.start();
+		//}
+		// This launches our windows VDC, hard coded for now cause we got too many missing parts
+		/*
+		     -s 0,hostbridge \
+      -s 3,ahci-hd,/dev/zvol/zfs01/vm-nfs-01/bhyve/vdc-02.wimsey.us/disk01  \
+      -s 10,virtio-net,tap0 \
+      -s 31,lpc \
+      -l com1,/dev/nmdm0A \
+      -l com2,/dev/nmdm1A \
+      -l bootrom,/apiary/system/efi/BHYVE_UEFI_20151002.fd \
+      -m 4G -H -w \
+      vdc-02.wimsey.us
+
+
+		 */
 		try {
 			System.in.read();
 		} catch (Throwable ignored) {
