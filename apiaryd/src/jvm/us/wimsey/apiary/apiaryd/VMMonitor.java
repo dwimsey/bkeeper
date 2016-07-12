@@ -67,6 +67,7 @@ public class VMMonitor {
 
 		for (File xmlfile : files) {
 			// Load up the registered VMs from their config files and add them to the VM list.
+			logger.debug("Loading VM configuration from file: " + xmlfile.toString());
 			virtualMachines.add(localHypervisor.registerVm(xmlfile));
 		}
 

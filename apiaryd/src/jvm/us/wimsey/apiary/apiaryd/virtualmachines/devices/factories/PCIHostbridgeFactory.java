@@ -13,7 +13,7 @@ import javax.xml.xpath.*;
  * Created by dwimsey on 7/12/16.
  */
 public class PCIHostbridgeFactory implements VMDeviceFactory {
-	private static final Logger logger = LogManager.getLogger(BhyveHypervisorDriver.class);
+	private static final Logger logger = LogManager.getLogger(PCIHostbridgeFactory.class);
 
 	public PCIHostbridgeFactory(BhyveHypervisorDriver bhyveHypervisorDriver) {
 	}

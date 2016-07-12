@@ -334,11 +334,15 @@ public abstract class VMStateBase implements IVMState {
 			for(int i = 0; i < devLength; i++) {
 				devNode = deviceNodes.item(i);
 				IVMDevice hvmDevice;
+				int bus = Integer.parseInt((String)xpath.evaluate("@bus", devNode, XPathConstants.STRING));
+				int slot = Integer.parseInt((String)xpath.evaluate("@slot", devNode, XPathConstants.STRING));
+				int function = Integer.parseInt((String)xpath.evaluate("@function", devNode, XPathConstants.STRING));
 				try {
 					hvmDevice = hvm.parseDevice(devNode);
-					logger.info("New device: " + hvmDevice.getDeviceAddress() + " " + hvmDevice.toString().replace("us.wimsey.apiary.apiaryd.virtualmachines.devices.", ""));
+					hvmDevice.configureDevice(bus, slot);
+					logger.debug("PCI device: " + hvmDevice.getDeviceAddress() + " " + hvmDevice.toString().replace("us.wimsey.apiary.apiaryd.virtualmachines.devices.", ""));
 				} catch(IllegalArgumentException ex) {
-					logger.error("Error parsing device configuration: " + ex.getMessage());
+					logger.error("PCI device: " + bus + ":" + slot + ":" + function + " Error parsing device configuration: " + ex.getMessage());
 				}
 			}
 		} catch (XPathExpressionException e) {

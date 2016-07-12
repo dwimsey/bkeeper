@@ -13,7 +13,7 @@ import javax.xml.xpath.*;
  * Created by dwimsey on 7/11/16.
  */
 public class LPCBridgeFactory implements VMDeviceFactory {
-	private static final Logger logger = LogManager.getLogger(BhyveHypervisorDriver.class);
+	private static final Logger logger = LogManager.getLogger(LPCBridgeFactory.class);
 
 	public LPCBridgeFactory(BhyveHypervisorDriver bhyveHypervisorDriver) {
 	}
@@ -50,7 +50,7 @@ public class LPCBridgeFactory implements VMDeviceFactory {
 					bootRomStr = null;
 				}
 			}
-			logger.debug("lpc: bootrom: " + (bootRomEnabled ? "enabled" : "disabled") + ":" + bootRomStr);
+			logger.debug("lpc: bootrom: " + (bootRomEnabled ? "enabled" : "disabled") + ": " + bootRomStr);
 		} catch (XPathExpressionException e) {
 			logger.error("lpc: bootrom: configuration parsing error: " + e.toString() + " Node: " + deviceNode.toString());
 			//bvmState.setRuntimeState(VMRuntimeState.ConfigurationInvalid);
@@ -76,7 +76,7 @@ public class LPCBridgeFactory implements VMDeviceFactory {
 					com1Str = null;
 				}
 			}
-			logger.debug("lpc: com1: " + (com1Enabled ? "enabled" : "disabled") + ":" + com1Str);
+			logger.debug("lpc: com1: " + (com1Enabled ? "enabled" : "disabled") + ": " + com1Str);
 		} catch (XPathExpressionException e) {
 			logger.error("lpc: com1: configuration parsing error: " + e.toString() + " Node: " + deviceNode.toString());
 			//bvmState.setRuntimeState(VMRuntimeState.ConfigurationInvalid);
@@ -101,7 +101,7 @@ public class LPCBridgeFactory implements VMDeviceFactory {
 					com2Str = null;
 				}
 			}
-			logger.debug("lpc: com2: " + (com2Enabled ? "enabled" : "disabled") + ":" + com2Str);
+			logger.debug("lpc: com2: " + (com2Enabled ? "enabled" : "disabled") + ": " + com2Str);
 		} catch (XPathExpressionException e) {
 			logger.error("lpc: com2: configuration parsing error: " + e.toString() + " Node: " + deviceNode.toString());
 			//bvmState.setRuntimeState(VMRuntimeState.ConfigurationInvalid);
