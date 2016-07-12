@@ -112,12 +112,6 @@ public class BhyveHypervisorDriver extends GenericHypervisor {
 	{
 
 	}
-
-	@Override
-	public IVMState registerVm(String URL) {
-		return registerVm(new File(URL));
-	}
-
 	@Override
 	public IVMState registerVm(File URL) {
 		BhyveVMState bvmState = new BhyveVMState();

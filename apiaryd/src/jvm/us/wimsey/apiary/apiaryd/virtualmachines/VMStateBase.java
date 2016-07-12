@@ -340,7 +340,7 @@ public abstract class VMStateBase implements IVMState {
 				try {
 					hvmDevice = hvm.parseDevice(devNode);
 					hvmDevice.configureDevice(bus, slot);
-					logger.debug("PCI device: " + hvmDevice.getDeviceAddress() + " " + hvmDevice.toString().replace("us.wimsey.apiary.apiaryd.virtualmachines.devices.", ""));
+					logger.info("PCI device: " + hvmDevice.getDeviceAddress() + " " + hvmDevice.toString().replace("us.wimsey.apiary.apiaryd.virtualmachines.devices.", ""));
 				} catch(IllegalArgumentException ex) {
 					logger.error("PCI device: " + bus + ":" + slot + ":" + function + " Error parsing device configuration: " + ex.getMessage());
 				}

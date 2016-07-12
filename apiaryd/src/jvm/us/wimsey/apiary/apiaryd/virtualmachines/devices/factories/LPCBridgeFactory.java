@@ -3,7 +3,7 @@ package us.wimsey.apiary.apiaryd.virtualmachines.devices.factories;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Node;
-import us.wimsey.apiary.apiaryd.hypervisors.bhyve.BhyveHypervisorDriver;
+import us.wimsey.apiary.apiaryd.hypervisors.IHypervisor;
 import us.wimsey.apiary.apiaryd.virtualmachines.devices.IVMDevice;
 import us.wimsey.apiary.apiaryd.virtualmachines.devices.LpcIsaPciBridge;
 
@@ -15,7 +15,7 @@ import javax.xml.xpath.*;
 public class LPCBridgeFactory implements VMDeviceFactory {
 	private static final Logger logger = LogManager.getLogger(LPCBridgeFactory.class);
 
-	public LPCBridgeFactory(BhyveHypervisorDriver bhyveHypervisorDriver) {
+	public LPCBridgeFactory(IHypervisor bhyveHypervisorDriver) {
 	}
 
 	@Override

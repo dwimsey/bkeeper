@@ -33,7 +33,7 @@ public class VMMonitor {
 	}
 
 	private IHypervisor localHypervisor = null;
-	public void start() {
+	public void start() throws Exception {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
@@ -49,7 +49,8 @@ public class VMMonitor {
 		try {
 			localHypervisor = HypervisorFactory.getLocalHypervisor(apiaryProperties);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Could not obtain local hypervisor reference: " + e.toString());
+			throw new Exception("Could not obtain local hypervisor reference", e);
 		}
 
 		String vmRegistryPath = "/usr/local/apiary/virtualmachines";

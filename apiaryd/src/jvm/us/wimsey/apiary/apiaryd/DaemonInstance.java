@@ -21,7 +21,7 @@ import java.nio.file.Paths;
 import java.util.Properties;
 
 public class DaemonInstance {
-	private static final Logger LOG = Logger.getLogger(DaemonInstance.class);
+	private static final Logger logger = Logger.getLogger(DaemonInstance.class);
 
 	private static Properties props = null;
 	public static void main(String[] args) throws Exception {
@@ -84,12 +84,18 @@ public class DaemonInstance {
 		VMMonitor vmMonitor = new VMMonitor(props);
 		APIServer apiServer = new APIServer(listenerPort, props, vmMonitor);
 
-		vmMonitor.start();
+		try {
+			vmMonitor.start();
+		} catch(Exception ex) {
+			logger.error("Could not start vmMonitor: "+ ex.toString());
+			System.exit(-1);
+		}
+
 		try {
 			apiServer.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
 		} catch (IOException ioe) {
-			System.err.println("Couldn't start server:\n" + ioe);
-			System.exit(-1);
+			logger.error("Couldn't start server: " + ioe.toString());
+			System.exit(-2);
 		}
 
 		System.out.println("Server started, Hit Enter to stop.  Listening on port " + apiServer.getListeningPort() + ".\n");
@@ -99,10 +105,11 @@ public class DaemonInstance {
 		} catch (Throwable ignored) {
 		}
 
+		logger.debug("API Server stopping . . .");
 		apiServer.stop();
-		System.out.println("API Server stopped.\n");
 
 		// We'll shut down the vm's depending on a sigterm or sighup
+		logger.debug("VM Monitor stopping . . .");
 		vmMonitor.shutdown(false);
 	}
 }

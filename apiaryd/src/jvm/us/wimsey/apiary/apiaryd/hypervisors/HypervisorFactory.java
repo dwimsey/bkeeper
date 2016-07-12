@@ -31,10 +31,14 @@ public class HypervisorFactory {
 			String localHypervisorType = "auto";
 			if(apiaryProperties.containsKey("apiaryd.hypervisor.type") == true) {
 				localHypervisorType = apiaryProperties.getProperty("apiaryd.hypervisor.type");
-			} else {
+				if(localHypervisorType == null || localHypervisorType.isEmpty() == true) {
+					localHypervisorType = "auto";
+				}
+			}
+			if("auto".equals(localHypervisorType) == true) {
+				// Detect the hypervisor we're expected to use
 				String osName = System.getProperty("os.name");
-
-				switch (localHypervisorType) {
+				switch (osName) {
 					case "Mac OS X":
 						localHypervisorType = "xhyve";
 						break;
@@ -42,12 +46,11 @@ public class HypervisorFactory {
 						localHypervisorType = "bhyve";
 						break;
 					default:
-						System.err.println(osName);
+						logger.error("Unexpected OS when detecting hypervisor: " + osName);
 						localHypervisorType = "*unknown*";
 						break;
 				}
 			}
-
 			switch (localHypervisorType) {
 				case "xhyve":
 					localHypervisor = new XhyveHypervisorDriver(apiaryProperties);
@@ -59,12 +62,6 @@ public class HypervisorFactory {
 					System.err.println(localHypervisorType);
 					throw new Exception("Invalid hypervisor type: " + localHypervisorType);
 			}
-
-
-			// Override the default hypervisor detectiong logic
-
-
-
 		}
         return localHypervisor;
     }

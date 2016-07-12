@@ -4,9 +4,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Node;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import us.wimsey.apiary.apiaryd.hypervisors.xhyve.XhyveVMState;
+import us.wimsey.apiary.apiaryd.virtualmachines.IVMState;
+import us.wimsey.apiary.apiaryd.virtualmachines.VMStateBase;
 import us.wimsey.apiary.apiaryd.virtualmachines.devices.IVMDevice;
 import us.wimsey.apiary.apiaryd.virtualmachines.devices.factories.VMDeviceFactory;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -44,6 +48,10 @@ public abstract class GenericHypervisor implements IHypervisor {
 	public List<String> getVMList()
 	{
 		throw new NotImplementedException();
+	}
+
+	public IVMState registerVm(String URL) {
+		return registerVm(new File(URL));
 	}
 
 	public void shutdown(float gracePeriod)
