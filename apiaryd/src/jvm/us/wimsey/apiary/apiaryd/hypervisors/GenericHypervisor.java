@@ -4,8 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Node;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-import us.wimsey.apiary.apiaryd.virtualmachines.IVMDevice;
-import us.wimsey.apiary.apiaryd.virtualmachines.VMDeviceFactory;
+import us.wimsey.apiary.apiaryd.virtualmachines.devices.IVMDevice;
+import us.wimsey.apiary.apiaryd.virtualmachines.devices.factories.VMDeviceFactory;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -65,6 +65,8 @@ public abstract class GenericHypervisor implements IHypervisor {
 			// We have a factory for this class, lets create it
 			VMDeviceFactory df = deviceFactories.get(deviceClass);
 			newDevice = df.parseDeviceNode(devNode);
+		} else {
+			throw new IllegalArgumentException("Unknown device class specified: " + deviceClass);
 		}
 		return newDevice;
 	}

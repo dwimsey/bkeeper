@@ -1,4 +1,4 @@
-package us.wimsey.apiary.apiaryd.virtualmachines;
+package us.wimsey.apiary.apiaryd.virtualmachines.devices;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,6 +9,18 @@ import org.apache.logging.log4j.Logger;
 public class LpcIsaPciBridge extends PCIDevice {
 	private static final Logger logger = LogManager.getLogger(LpcIsaPciBridge.class);
 
+	public LpcIsaPciBridge(String bootRomStr, String com1Str, String com2Str) {
+		super();
+		_bootrom = bootRomStr;
+		_com1 = com1Str;
+		_com2 = com2Str;
+	}
+
+	public String toString()
+	{
+		return ("LPC PCI-ISA legacy bridge: bootrom: " + (_bootrom != null ? _bootrom : "not configured") + " com1: " + (_com1 != null ? _com1 : "not configured") + " com2: " + (_com2 != null ? _com2 : "not configured"));
+	}
+
 	@Override
 	public String getDeviceName() {
 		return "lpc";
@@ -16,7 +28,7 @@ public class LpcIsaPciBridge extends PCIDevice {
 
 	@Override
 	public String getDeviceAddress() {
-		return "31";
+		return _bus + ":" + _slot + ":" + _function;
 	}
 
 	private int _bus;
@@ -27,6 +39,13 @@ public class LpcIsaPciBridge extends PCIDevice {
 		if(bus != 0) {
 			throw new IllegalArgumentException("LPC ISA-PCI Bridge for legacy devices (lpc) must be on bus 0.  Configured bus: " + bus);
 		}
+		_bus = bus;
+
+		if(slot != 31) {
+			throw new IllegalArgumentException("LPC ISA-PCI Bridge for legacy devices (lpc) must be on bus 0, slot 31 for UEFI compatibility.  Configured bus: " + bus + " slot: " + slot);
+		}
+		_slot = slot;
+		_function = 0;
 
 		// -s 31,lpc is required for base connection
 		String configString = "lpc";

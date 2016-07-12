@@ -2,12 +2,12 @@ package us.wimsey.apiary.apiaryd.hypervisors.bhyve;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import us.wimsey.apiary.apiaryd.virtualmachines.GenericVMState;
+import us.wimsey.apiary.apiaryd.virtualmachines.VMStateBase;
 
 /**
  * Created by dwimsey on 7/10/16.
  */
-public class BhyveVMState extends GenericVMState {
+public class BhyveVMState extends VMStateBase {
 	private static final Logger logger = LogManager.getLogger(BhyveVMState.class);
 
 	private VMRuntimeState _runtimeState = VMRuntimeState.Initializing;

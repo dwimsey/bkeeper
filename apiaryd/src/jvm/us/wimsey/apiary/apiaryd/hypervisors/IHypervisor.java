@@ -1,7 +1,7 @@
 package us.wimsey.apiary.apiaryd.hypervisors;
 
 import org.w3c.dom.Node;
-import us.wimsey.apiary.apiaryd.virtualmachines.IVMDevice;
+import us.wimsey.apiary.apiaryd.virtualmachines.devices.IVMDevice;
 import us.wimsey.apiary.apiaryd.virtualmachines.IVMState;
 
 import java.io.File;

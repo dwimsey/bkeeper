@@ -7,6 +7,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import us.wimsey.apiary.apiaryd.hypervisors.IHypervisor;
+import us.wimsey.apiary.apiaryd.virtualmachines.devices.IVMDevice;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -19,11 +20,11 @@ import java.util.UUID;
 /**
  * Created by dwimsey on 7/10/16.
  */
-public abstract class GenericVMState implements IVMState {
-	private static final Logger logger = LogManager.getLogger(GenericVMState.class);
+public abstract class VMStateBase implements IVMState {
+	private static final Logger logger = LogManager.getLogger(VMStateBase.class);
 
 	protected UUID _SMBUUID;
-	protected GenericVMState()
+	protected VMStateBase()
 	{
 		_SMBUUID = UUID.randomUUID();
 		// Until more is done, the VM configuration is invalid, this is okay for now, not
@@ -332,8 +333,13 @@ public abstract class GenericVMState implements IVMState {
 
 			for(int i = 0; i < devLength; i++) {
 				devNode = deviceNodes.item(i);
-				IVMDevice hvmDevice = hvm.parseDevice(devNode);
-				logger.warn("New device: " + hvmDevice.toString());
+				IVMDevice hvmDevice;
+				try {
+					hvmDevice = hvm.parseDevice(devNode);
+					logger.info("New device: " + hvmDevice.getDeviceAddress() + " " + hvmDevice.toString().replace("us.wimsey.apiary.apiaryd.virtualmachines.devices.", ""));
+				} catch(IllegalArgumentException ex) {
+					logger.error("Error parsing device configuration: " + ex.getMessage());
+				}
 			}
 		} catch (XPathExpressionException e) {
 			logger.error(e);

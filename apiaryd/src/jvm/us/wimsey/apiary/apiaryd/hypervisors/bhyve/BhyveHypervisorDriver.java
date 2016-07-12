@@ -4,8 +4,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import us.wimsey.apiary.apiaryd.VirtualMachineRunner;
 import us.wimsey.apiary.apiaryd.hypervisors.GenericHypervisor;
-import us.wimsey.apiary.apiaryd.virtualmachines.GenericVMState;
+import us.wimsey.apiary.apiaryd.virtualmachines.VMStateBase;
 import us.wimsey.apiary.apiaryd.virtualmachines.IVMState;
+import us.wimsey.apiary.apiaryd.virtualmachines.devices.factories.LPCBridgeFactory;
+import us.wimsey.apiary.apiaryd.virtualmachines.devices.factories.PCIHostbridgeFactory;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -40,12 +42,12 @@ public class BhyveHypervisorDriver extends GenericHypervisor {
 			}
 		}
 
-		deviceFactories.put("lpc", new LPCBridgeFactory());
-		deviceFactories.put("hostbridge", new PCIHostbridgeFactory());
-		deviceFactories.put("ahci-hd", new PCIAHCIHDFactory());
-		deviceFactories.put("virtio-net", new PCIVirtIONetFactory());
-		deviceFactories.put("virtio-blk", new PCIVirtIOBlockFactory());
-		deviceFactories.put("virtio-rnd", new PCIVirtIORandomFactory());q
+		deviceFactories.put("hostbridge", new PCIHostbridgeFactory(this));
+		deviceFactories.put("lpc", new LPCBridgeFactory(this));
+//		deviceFactories.put("ahci-hd", new PCIAHCIHDFactory());
+//		deviceFactories.put("virtio-net", new PCIVirtIONetFactory());
+//		deviceFactories.put("virtio-blk", new PCIVirtIOBlockFactory());
+//		deviceFactories.put("virtio-rnd", new PCIVirtIORandomFactory());
 	}
 
 	private String sshShellCmd = "ssh ${SSH_OPTIONS} ${REMOTE} ${SHELLCMD}";
@@ -119,7 +121,7 @@ public class BhyveHypervisorDriver extends GenericHypervisor {
 	@Override
 	public IVMState registerVm(File URL) {
 		BhyveVMState bvmState = new BhyveVMState();
-		GenericVMState.loadFile(URL, bvmState, this);
+		VMStateBase.loadFile(URL, bvmState, this);
 
 		return bvmState;
 	}

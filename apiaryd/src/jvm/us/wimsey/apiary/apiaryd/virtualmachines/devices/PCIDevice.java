@@ -1,4 +1,4 @@
-package us.wimsey.apiary.apiaryd.virtualmachines;
+package us.wimsey.apiary.apiaryd.virtualmachines.devices;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -8,6 +8,8 @@ import org.apache.logging.log4j.Logger;
  */
 public abstract class PCIDevice implements IVMDevice {
 	private static final Logger logger = LogManager.getLogger(PCIDevice.class);
+
+	protected boolean _enabled = true;
 
 	@Override
 	public String getDeviceAddress() {

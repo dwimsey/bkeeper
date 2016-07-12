@@ -1,4 +1,4 @@
-package us.wimsey.apiary.apiaryd.virtualmachines;
+package us.wimsey.apiary.apiaryd.virtualmachines.devices;
 
 /**
  * Created by dwimsey on 7/10/16.
