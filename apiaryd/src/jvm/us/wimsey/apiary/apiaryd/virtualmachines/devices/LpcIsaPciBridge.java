@@ -2,6 +2,7 @@ package us.wimsey.apiary.apiaryd.virtualmachines.devices;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import us.wimsey.apiary.apiaryd.virtualmachines.IVMState;
 
 /**
  * Created by dwimsey on 7/10/16.
@@ -9,8 +10,8 @@ import org.apache.logging.log4j.Logger;
 public class LpcIsaPciBridge extends PCIDevice {
 	private static final Logger logger = LogManager.getLogger(LpcIsaPciBridge.class);
 
-	public LpcIsaPciBridge(String bootRomStr, String com1Str, String com2Str) {
-		super();
+	public LpcIsaPciBridge(int bus, int slot, int function, String bootRomStr, String com1Str, String com2Str) {
+		super(bus, slot, function);
 		_bootrom = bootRomStr;
 		_com1 = com1Str;
 		_com2 = com2Str;
@@ -26,37 +27,24 @@ public class LpcIsaPciBridge extends PCIDevice {
 		return "lpc";
 	}
 
-	@Override
-	public String getDeviceAddress() {
-		return _bus + ":" + _slot + ":" + _function;
-	}
-
-	private int _bus;
-	private int _slot;
-	private int _function;
-	public String configureDevice(int bus, int slot)
+	public String getCmdline()
 	{
-		if(bus != 0) {
-			throw new IllegalArgumentException("LPC ISA-PCI Bridge for legacy devices (lpc) must be on bus 0.  Configured bus: " + bus);
+		if(_bus != 0) {
+			throw new IllegalArgumentException("LPC ISA-PCI Bridge for legacy devices (lpc) must be on bus 0.  Configured bus: " + _bus);
 		}
-		_bus = bus;
-
-		if(slot != 31) {
-			throw new IllegalArgumentException("LPC ISA-PCI Bridge for legacy devices (lpc) must be on bus 0, slot 31 for UEFI compatibility.  Configured bus: " + bus + " slot: " + slot);
+		if(_slot != 31) {
+			throw new IllegalArgumentException("LPC ISA-PCI Bridge for legacy devices (lpc) must be on bus 0, slot 31 for UEFI compatibility.  Configured bus: " + _bus + " slot: " + _slot);
 		}
-		_slot = slot;
-		_function = 0;
 
-		// -s 31,lpc is required for base connection
-		String configString = "lpc";
-		if(_bootrom != null) {
+		String configString = " -s " + getDeviceAddress() + ",lpc";
+		if(_bootrom != null && _bootrom.isEmpty() == false) {
 			// -l bootroom,<PATH>
 			configString += " -l bootrom," + _bootrom;
 		}
-		if(_com1 != null) {
+		if(_com1 != null && _com1.isEmpty() == false) {
 			configString += " -l com1," + _com1;
 		}
-		if(_com2 != null) {
+		if(_com2 != null && _com2.isEmpty() == false) {
 			configString += " -l com2," + _com2;
 		}
 		return configString;

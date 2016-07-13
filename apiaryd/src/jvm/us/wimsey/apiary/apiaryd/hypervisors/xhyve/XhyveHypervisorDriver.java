@@ -5,6 +5,9 @@ import org.apache.logging.log4j.Logger;
 import us.wimsey.apiary.apiaryd.hypervisors.GenericHypervisor;
 import us.wimsey.apiary.apiaryd.virtualmachines.IVMState;
 import us.wimsey.apiary.apiaryd.virtualmachines.VMStateBase;
+import us.wimsey.apiary.apiaryd.virtualmachines.devices.factories.NICDeviceFactory;
+import us.wimsey.apiary.apiaryd.virtualmachines.devices.factories.RNDDeviceFactory;
+import us.wimsey.apiary.apiaryd.virtualmachines.devices.factories.BlockDeviceFactory;
 import us.wimsey.apiary.apiaryd.virtualmachines.devices.factories.LPCBridgeFactory;
 import us.wimsey.apiary.apiaryd.virtualmachines.devices.factories.PCIHostbridgeFactory;
 
@@ -36,6 +39,11 @@ public class XhyveHypervisorDriver extends GenericHypervisor {
 
 		deviceFactories.put("hostbridge", new PCIHostbridgeFactory(this));
 		deviceFactories.put("lpc", new LPCBridgeFactory(this));
+		deviceFactories.put("ahci-hd", new BlockDeviceFactory(this));
+		deviceFactories.put("ahci-cd", new BlockDeviceFactory(this));
+		deviceFactories.put("virtio-blk", new BlockDeviceFactory(this));
+		deviceFactories.put("virtio-net", new NICDeviceFactory(this));
+		deviceFactories.put("virtio-rnd", new RNDDeviceFactory(this));
 	}
 
 	@Override

@@ -72,6 +72,9 @@ public class VMMonitor {
 			virtualMachines.add(localHypervisor.registerVm(xmlfile));
 		}
 
+		for(IVMState vm : virtualMachines) {
+			vm.powerOn();
+		}
 		/*
 		// Attempt to cleanup with any apiary VMs that may have been left running because apiaryd crashed
 		List<String> vms = localHypervisor.getVMList();

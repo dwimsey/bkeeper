@@ -19,18 +19,13 @@ public class PCIHostbridgeFactory implements VMDeviceFactory {
 	}
 
 	@Override
-	public IVMDevice parseDeviceNode(Node deviceNode) {
+	public IVMDevice parseDeviceNode(Node deviceNode, String deviceClass, int bus, int slot, int function) {
 		XPathFactory xPathfactory = XPathFactory.newInstance();
 		XPath xpath = xPathfactory.newXPath();
-		XPathExpression expr = null;
-		try {
-			expr = xpath.compile("@type");
-		} catch (XPathExpressionException e) {
-			e.printStackTrace();
-		}
+
 		PCIHostBridge.HostbridgeOperatingMode bridgeType = PCIHostBridge.HostbridgeOperatingMode.Intel;
 		try {
-			String bridgeTypeString = (String) expr.evaluate(deviceNode, XPathConstants.STRING);
+			String bridgeTypeString = (String) xpath.evaluate("@type", deviceNode, XPathConstants.STRING);
 			if("intel".compareToIgnoreCase(bridgeTypeString) == 0) {
 				bridgeType = PCIHostBridge.HostbridgeOperatingMode.Intel;
 			} else if("amd".compareToIgnoreCase(bridgeTypeString) == 0) {
@@ -45,6 +40,6 @@ public class PCIHostbridgeFactory implements VMDeviceFactory {
 			//bvmState.setRuntimeState(VMRuntimeState.ConfigurationInvalid);
 		}
 
-		return new PCIHostBridge(bridgeType);
+		return new PCIHostBridge(deviceClass, bus, slot, function, bridgeType);
 	}
 }

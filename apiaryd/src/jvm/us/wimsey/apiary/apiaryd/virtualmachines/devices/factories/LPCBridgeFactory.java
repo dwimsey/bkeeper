@@ -19,7 +19,7 @@ public class LPCBridgeFactory implements VMDeviceFactory {
 	}
 
 	@Override
-	public IVMDevice parseDeviceNode(Node deviceNode) {
+	public IVMDevice parseDeviceNode(Node deviceNode, String deviceClass, int bus, int slot, int function) {
 		XPathFactory xPathfactory = XPathFactory.newInstance();
 		XPath xpath = xPathfactory.newXPath();
 
@@ -108,5 +108,5 @@ public class LPCBridgeFactory implements VMDeviceFactory {
 		}
 
 
-		return new LpcIsaPciBridge(bootRomStr, com1Str, com2Str);
+		return new LpcIsaPciBridge(bus, slot, function, bootRomStr, com1Str, com2Str);
 	}}

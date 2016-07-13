@@ -87,7 +87,7 @@ public class DaemonInstance {
 		try {
 			vmMonitor.start();
 		} catch(Exception ex) {
-			logger.error("Could not start vmMonitor: "+ ex.toString());
+			logger.error("Could not start vmMonitor: ", ex);
 			System.exit(-1);
 		}
 

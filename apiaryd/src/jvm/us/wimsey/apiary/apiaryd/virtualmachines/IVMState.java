@@ -1,5 +1,8 @@
 package us.wimsey.apiary.apiaryd.virtualmachines;
 
+import us.wimsey.apiary.apiaryd.virtualmachines.devices.IVMDevice;
+
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -65,4 +68,8 @@ public interface IVMState {
 			runtimeState = _runtimeState;
 		}
 	}
+
+	public List<IVMDevice> getDeviceList();
+	public void addDevice(IVMDevice vmDevice);
+	public void removeDevice(IVMDevice vmDevice);
 }

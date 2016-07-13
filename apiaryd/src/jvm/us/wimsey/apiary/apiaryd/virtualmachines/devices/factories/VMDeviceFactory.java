@@ -7,5 +7,5 @@ import us.wimsey.apiary.apiaryd.virtualmachines.devices.IVMDevice;
  * Created by dwimsey on 7/11/16.
  */
 public interface VMDeviceFactory {
-	IVMDevice parseDeviceNode(Node deviceNode);
+	IVMDevice parseDeviceNode(Node deviceNode, String deviceClass, int bus, int slot, int function);
 }

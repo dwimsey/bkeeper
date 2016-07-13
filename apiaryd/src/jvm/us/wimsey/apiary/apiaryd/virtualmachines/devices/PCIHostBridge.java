@@ -2,6 +2,7 @@ package us.wimsey.apiary.apiaryd.virtualmachines.devices;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import us.wimsey.apiary.apiaryd.virtualmachines.IVMState;
 
 /**
  * Created by dwimsey on 7/12/16.
@@ -9,8 +10,8 @@ import org.apache.logging.log4j.Logger;
 public class PCIHostBridge extends PCIDevice {
 	private static final Logger logger = LogManager.getLogger(PCIHostBridge.class);
 
-	public PCIHostBridge(HostbridgeOperatingMode bridgeType) {
-		super();
+	public PCIHostBridge(String deviceClass, int bus, int slot, int function, HostbridgeOperatingMode bridgeType) {
+		super(bus, slot, function);
 		_operatingMode = bridgeType;
 	}
 
@@ -24,37 +25,22 @@ public class PCIHostBridge extends PCIDevice {
 		return "hostbridge";
 	}
 
-	@Override
-	public String getDeviceAddress() {
-		return _bus + ":" + _slot + ":" + _function;
-	}
-
-	private int _bus;
-	private int _slot;
-	private int _function;
-	public String configureDevice(int bus, int slot)
+	public String getCmdline()
 	{
-		if(bus != 0) {
-			throw new IllegalArgumentException("PCI host bridge must be on bus 0.  Configured bus: " + bus);
+		if(_bus != 0) {
+			throw new IllegalArgumentException("PCI host bridge must be on bus 0.  Configured bus: " + _bus);
 		}
-		_bus = bus;
-
-		if(slot != 0) {
-			throw new IllegalArgumentException("PCI host bridge must be on bus 0, slot 0.  Configured slot: " + slot);
+		if(_slot != 0) {
+			throw new IllegalArgumentException("PCI host bridge must be on bus 0, slot 0.  Configured slot: " + _slot);
 		}
-		_slot = slot;
-
-		int function = 0; // place holder to make code consistent 'looking'
-		if(function != 0) {
-			throw new IllegalArgumentException("PCI host bridge must be on bus 0, slot 0, function 0.  Configured function: " + function);
+		if(_function != 0) {
+			throw new IllegalArgumentException("PCI host bridge must be on bus 0, slot 0, function 0.  Configured function: " + _function);
 		}
-		_function = 0;
-
 		switch(_operatingMode) {
 			case Intel:
-				return "hostbridge";
+				return " -s 0:0:0,hostbridge";
 			case Amd:
-				return "amd_hostbridge";
+				return " -s 0:0:0,amd_hostbridge";
 			default:
 				throw new IllegalArgumentException("Unexpected operating mode: " + _operatingMode.toString());
 		}

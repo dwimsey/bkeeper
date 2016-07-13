@@ -10,6 +10,7 @@ import us.wimsey.apiary.apiaryd.virtualmachines.VMStateBase;
 import us.wimsey.apiary.apiaryd.virtualmachines.devices.IVMDevice;
 import us.wimsey.apiary.apiaryd.virtualmachines.devices.factories.VMDeviceFactory;
 
+import javax.xml.xpath.XPathConstants;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -69,12 +70,21 @@ public abstract class GenericHypervisor implements IHypervisor {
 		}
 
 		String deviceClass = devNode.getNodeName();
-		if(deviceFactories.containsKey(deviceClass) == true) {
-			// We have a factory for this class, lets create it
-			VMDeviceFactory df = deviceFactories.get(deviceClass);
-			newDevice = df.parseDeviceNode(devNode);
-		} else {
-			throw new IllegalArgumentException("Unknown device class specified: " + deviceClass);
+
+		switch(busType) {
+			default:
+			case "pci":
+				int bus = Integer.parseInt(devNode.getAttributes().getNamedItem("bus").getNodeValue());
+				int slot = Integer.parseInt(devNode.getAttributes().getNamedItem("slot").getNodeValue());
+				int function = Integer.parseInt(devNode.getAttributes().getNamedItem("function").getNodeValue());
+				if(deviceFactories.containsKey(deviceClass) == true) {
+					// We have a factory for this class, lets create it
+					VMDeviceFactory df = deviceFactories.get(deviceClass);
+					newDevice = df.parseDeviceNode(devNode, deviceClass, bus, slot, function);
+				} else {
+					throw new IllegalArgumentException("Unknown device class specified: " + deviceClass);
+				}
+				break;
 		}
 		return newDevice;
 	}

@@ -15,6 +15,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -334,20 +336,17 @@ public abstract class VMStateBase implements IVMState {
 			for(int i = 0; i < devLength; i++) {
 				devNode = deviceNodes.item(i);
 				IVMDevice hvmDevice;
-				int bus = Integer.parseInt((String)xpath.evaluate("@bus", devNode, XPathConstants.STRING));
-				int slot = Integer.parseInt((String)xpath.evaluate("@slot", devNode, XPathConstants.STRING));
-				int function = Integer.parseInt((String)xpath.evaluate("@function", devNode, XPathConstants.STRING));
 				try {
 					hvmDevice = hvm.parseDevice(devNode);
-					hvmDevice.configureDevice(bus, slot);
+					bvmState.addDevice(hvmDevice);
+					//hvmDevice.attachDevice(bvmState, bus, slot, function);
 					logger.info("PCI device: " + hvmDevice.getDeviceAddress() + " " + hvmDevice.toString().replace("us.wimsey.apiary.apiaryd.virtualmachines.devices.", ""));
 				} catch(IllegalArgumentException ex) {
-					logger.error("PCI device: " + bus + ":" + slot + ":" + function + " Error parsing device configuration: " + ex.getMessage());
+					logger.error("PCI device: " /*+ bus + ":" + slot + ":" + function */+ " Error parsing device configuration: " + ex.getMessage());
 				}
 			}
 		} catch (XPathExpressionException e) {
 			logger.error(e);
-			//bvmState.setRuntimeState(VMRuntimeState.ConfigurationInvalid);
 		}
 
 
@@ -364,4 +363,22 @@ public abstract class VMStateBase implements IVMState {
 		*/
 
 	}
+
+
+	private List<IVMDevice> _deviceList = new LinkedList<IVMDevice>();
+	public List<IVMDevice> getDeviceList()
+	{
+		return _deviceList;
+	}
+
+	public void addDevice(IVMDevice vmDevice)
+	{
+		_deviceList.add(vmDevice);
+	}
+
+	public void removeDevice(IVMDevice vmDevice)
+	{
+		_deviceList.remove(vmDevice);
+	}
+
 }
