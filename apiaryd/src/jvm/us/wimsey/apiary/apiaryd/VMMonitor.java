@@ -89,6 +89,17 @@ public class VMMonitor {
 	}
 
 	public void shutdown(Boolean killRemainingVMs) {
+		IVMState.VMRuntimeState vmState;
+		for(IVMState vm : virtualMachines) {
+			vmState = vm.getRuntimeState();
+			if(vmState == IVMState.VMRuntimeState.Running || vmState == IVMState.VMRuntimeState.Initializing) {
+				if(killRemainingVMs == true) {
+					vm.powerOff(0.0f);
+				} else {
+					vm.powerOff(120.0f);
+				}
+			}
+		}
 	}
 
 	public IVMState register(String s) {

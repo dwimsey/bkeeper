@@ -2,6 +2,7 @@ package us.wimsey.apiary.apiaryd.hypervisors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import us.wimsey.apiary.apiaryd.hypervisors.xhyve.XhyveVMState;
@@ -74,9 +75,23 @@ public abstract class GenericHypervisor implements IHypervisor {
 		switch(busType) {
 			default:
 			case "pci":
-				int bus = Integer.parseInt(devNode.getAttributes().getNamedItem("bus").getNodeValue());
-				int slot = Integer.parseInt(devNode.getAttributes().getNamedItem("slot").getNodeValue());
-				int function = Integer.parseInt(devNode.getAttributes().getNamedItem("function").getNodeValue());
+				NamedNodeMap nm = devNode.getAttributes();
+				int bus = 0;
+				int slot = 0;
+				int function = 0;
+
+				Node ni = nm.getNamedItem("bus");
+				if(ni != null) {
+					bus = Integer.parseInt(ni.getNodeValue());
+				}
+				ni = nm.getNamedItem("slot");
+				if(ni != null) {
+					slot = Integer.parseInt(ni.getNodeValue());
+				}
+				ni = nm.getNamedItem("function");
+				if(ni != null) {
+					function = Integer.parseInt(ni.getNodeValue());
+				}
 				if(deviceFactories.containsKey(deviceClass) == true) {
 					// We have a factory for this class, lets create it
 					VMDeviceFactory df = deviceFactories.get(deviceClass);

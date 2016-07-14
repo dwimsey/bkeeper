@@ -5,11 +5,7 @@ import org.apache.logging.log4j.Logger;
 import us.wimsey.apiary.apiaryd.hypervisors.GenericHypervisor;
 import us.wimsey.apiary.apiaryd.virtualmachines.IVMState;
 import us.wimsey.apiary.apiaryd.virtualmachines.VMStateBase;
-import us.wimsey.apiary.apiaryd.virtualmachines.devices.factories.NICDeviceFactory;
-import us.wimsey.apiary.apiaryd.virtualmachines.devices.factories.RNDDeviceFactory;
-import us.wimsey.apiary.apiaryd.virtualmachines.devices.factories.BlockDeviceFactory;
-import us.wimsey.apiary.apiaryd.virtualmachines.devices.factories.LPCBridgeFactory;
-import us.wimsey.apiary.apiaryd.virtualmachines.devices.factories.PCIHostbridgeFactory;
+import us.wimsey.apiary.apiaryd.virtualmachines.devices.factories.*;
 
 import java.io.File;
 import java.util.List;
@@ -37,6 +33,7 @@ public class XhyveHypervisorDriver extends GenericHypervisor {
 			}
 		}
 
+		deviceFactories.put("hvmoptions", new CmdLineOptionsDeviceFactory(this));
 		deviceFactories.put("hostbridge", new PCIHostbridgeFactory(this));
 		deviceFactories.put("lpc", new LPCBridgeFactory(this));
 		deviceFactories.put("ahci-hd", new BlockDeviceFactory(this));
@@ -49,7 +46,7 @@ public class XhyveHypervisorDriver extends GenericHypervisor {
 	@Override
 	public IVMState registerVm(File URL) {
 		XhyveVMState vmState = new XhyveVMState();
-		VMStateBase.loadFile(URL, vmState, this);
+		vmState.loadFile(URL, this);
 		return vmState;
 	}
 

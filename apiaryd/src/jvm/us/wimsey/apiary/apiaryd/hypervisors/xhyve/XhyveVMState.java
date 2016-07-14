@@ -5,6 +5,9 @@ import org.apache.logging.log4j.Logger;
 import us.wimsey.apiary.apiaryd.virtualmachines.VMStateBase;
 import us.wimsey.apiary.apiaryd.virtualmachines.devices.IVMDevice;
 
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
 /**
  * Created by dwimsey on 7/10/16.
  */
@@ -52,10 +55,10 @@ public class XhyveVMState extends VMStateBase {
 		return false;
 	}
 
+	Process _vmProcess = null;
 	@Override
 	public void powerOn() {
-		_runtimeState = VMRuntimeState.Off;
-		if(_runtimeState != VMRuntimeState.Off) {
+		if(_runtimeState != VMRuntimeState.Off && _runtimeState != VMRuntimeState.Zombie) {
 			if(_runtimeState == VMRuntimeState.ConfigurationInvalid) {
 				throw new IllegalStateException("Can not power on virtual machine with invalid configuration: " + _runtimeState.toString());
 			}
@@ -64,6 +67,7 @@ public class XhyveVMState extends VMStateBase {
 
 		String cmdline = "/Users/dwimsey/bin/xhyve";
 
+		boolean validConfiguration = true;
 		cmdline += " -c " + _cpuCount;
 		cmdline += " -m " + _memorySize / (1024*1024);
 		if(_SMBUUID != null) {
@@ -72,32 +76,78 @@ public class XhyveVMState extends VMStateBase {
 		cmdline += (_rtcIsUTC ? " -u" : "") + (_wireGuestMemory ? " -W" : "") + (_yieldOnHlt ? " -H" : "") + (_ignoreMissingMSRs ? " -w" : "");
 
 		for(IVMDevice pciDevice : getDeviceList()) {
+			if("0:0:0".equals(pciDevice.getDeviceAddress().toString()) == true) {
+				if(pciDevice.getClass().getSimpleName().equals("PCIHostBridge") == false) {
+					// this is invalid, hostbridge must be on 0:0:0
+					logger.error("Could not configure device, only hostbridge is allowed on 0:0:0: " + pciDevice.getDeviceName());
+					validConfiguration = false;
+				}
+			} else if(pciDevice.getClass().getSimpleName().equals("hostbridge") == true) {
+				if("0:0:0".equals(pciDevice.getDeviceAddress().toString()) == false) {
+					logger.error("Could not configure device, hostbridge must be on 0:0:0: " + pciDevice.getDeviceName());
+					validConfiguration = false;
+				}
+			} else if(pciDevice.getClass().getSimpleName().equals("lpc") == true) {
+				if(pciDevice.getDeviceAddress().startsWith("0:31:") == false) {
+					logger.error("Could not configure device, lpc must be on bus 0, slot 31 due to a bug in some UEFI firmware versions: " + pciDevice.getDeviceName());
+					validConfiguration = false;
+				}
+			}
+
 			cmdline += pciDevice.getCmdline();
 		}
 
-/*
-		-s 0,hostbridge \
-		-s 3,ahci-hd,/dev/zvol/zfs01/vm-nfs-01/bhyve/vdc-02.wimsey.us/disk01  \
-		-s 10,virtio-net,tap0 \
-		-s 31,lpc \
-		-l com1,/dev/nmdm0A \
-		-l com2,/dev/nmdm1A \
-		-l bootrom,/apiary/system/efi/BHYVE_UEFI_20151002.fd \
-*/
 		cmdline += " " + this.getVmName();
+		if(validConfiguration == false) {
+			logger.error("VM Configuration is invalid, can not power on.");
+			return;
+		}
+
 		logger.info("Powering on VM: " + cmdline);
+		try {
+			_vmProcess = Runtime.getRuntime().exec(cmdline);
+		} catch (IOException e) {
+			logger.error("Could not start vm process: " + e.getMessage(), e);
+			_vmProcess = null;
+			return;
+		}
+
+		if(_vmProcess.isAlive() == true) {
+			_runtimeState = VMRuntimeState.Running;
+		}
 	}
 
 	@Override
 	public void powerOff(float gracePeriod) {
-		if(_runtimeState != VMRuntimeState.Running) {
+		logger.info("Powering off VM: " + _vmName);
+
+		if(_runtimeState != VMRuntimeState.Running && _runtimeState != VMRuntimeState.Initializing && _runtimeState != VMRuntimeState.Stopping && _runtimeState != VMRuntimeState.Zombie) {
 			throw new IllegalStateException("Can not power off virtual machine that is not running: " + _runtimeState.toString());
+		}
+
+		this._runtimeState = VMRuntimeState.Stopping;
+		if(_vmProcess != null) {
+			if(gracePeriod < 0.01) {
+				// kill it
+				if(_vmProcess.isAlive() == true) {
+					_vmProcess.destroyForcibly();
+				}
+			} else {
+				try {
+					_vmProcess.waitFor(((int)(gracePeriod * 1000)), TimeUnit.MILLISECONDS);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				if(_vmProcess.isAlive() == true) {
+					_vmProcess.destroyForcibly();
+				}
+			}
 		}
 	}
 
 	@Override
 	public void reset() {
-		if(_runtimeState != VMRuntimeState.Running) {
+		if(_runtimeState != VMRuntimeState.Running && _runtimeState != VMRuntimeState.Initializing && _runtimeState != VMRuntimeState.Stopping) {
 			throw new IllegalStateException("Can not reset virtual machine that is not running: " + _runtimeState.toString());
 		}
 	}
@@ -108,7 +158,7 @@ public class XhyveVMState extends VMStateBase {
 	}
 
 	@Override
-	public void validateConfiguration() {
-		//if(this.getCpuCount())
+	public boolean validateConfiguration() {
+		return true;
 	}
 }

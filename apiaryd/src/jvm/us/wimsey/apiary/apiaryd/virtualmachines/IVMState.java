@@ -1,7 +1,9 @@
 package us.wimsey.apiary.apiaryd.virtualmachines;
 
+import us.wimsey.apiary.apiaryd.hypervisors.IHypervisor;
 import us.wimsey.apiary.apiaryd.virtualmachines.devices.IVMDevice;
 
+import java.io.File;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,8 +51,9 @@ public interface IVMState {
 	public void reset();
 	public VMRuntimeState getRuntimeState();
 
-	void save(String s);
-	void validateConfiguration();
+	public void loadFile(File url, IHypervisor hvm);
+
+	boolean validateConfiguration();
 	public enum VMRuntimeState {
 		Initializing(0),
 		Off (10),
@@ -58,7 +61,7 @@ public interface IVMState {
 		Running (30),
 		//Suspending (40),
 		//Suspended (50),
-		//Stopping (60),
+		Stopping (60),
 		ConfigurationInvalid(98),
 		Zombie(99);
 

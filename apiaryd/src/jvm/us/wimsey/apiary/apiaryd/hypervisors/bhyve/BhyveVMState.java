@@ -10,8 +10,6 @@ import us.wimsey.apiary.apiaryd.virtualmachines.VMStateBase;
 public class BhyveVMState extends VMStateBase {
 	private static final Logger logger = LogManager.getLogger(BhyveVMState.class);
 
-	private VMRuntimeState _runtimeState = VMRuntimeState.Initializing;
-
 	public BhyveVMState() {
 		super();
 	}
@@ -77,7 +75,8 @@ public class BhyveVMState extends VMStateBase {
 	}
 
 	@Override
-	public void validateConfiguration() {
+	public boolean validateConfiguration() {
 		//if(this.getCpuCount())
+		return true;
 	}
 }
