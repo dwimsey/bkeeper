@@ -14,8 +14,6 @@ import java.util.concurrent.TimeUnit;
 public class XhyveVMState extends VMStateBase {
 	private static final Logger logger = LogManager.getLogger(XhyveVMState.class);
 
-	private VMRuntimeState _runtimeState = VMRuntimeState.Initializing;
-
 	public XhyveVMState() {
 		super();
 	}
@@ -65,7 +63,8 @@ public class XhyveVMState extends VMStateBase {
 			throw new IllegalStateException("Can not power on virtual machine that is not off: " + _runtimeState.toString());
 		}
 
-		String cmdline = "/Users/dwimsey/bin/xhyve";
+		//String cmdline = "/Users/dwimsey/bin/xhyve";
+		String cmdline = "/usr/sbin/bhyve";
 
 		boolean validConfiguration = true;
 		cmdline += " -c " + _cpuCount;

@@ -2,8 +2,9 @@ package us.wimsey.apiary.apiaryd.hypervisors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import us.wimsey.apiary.apiaryd.hypervisors.bhyve.BhyveHypervisorDriver;
+import org.apache.logging.log4j.Logger;
 import us.wimsey.apiary.apiaryd.hypervisors.xhyve.XhyveHypervisorDriver;
+import us.wimsey.apiary.apiaryd.hypervisors.bhyve.BhyveHypervisorDriver;
 
 import java.util.Properties;
 
