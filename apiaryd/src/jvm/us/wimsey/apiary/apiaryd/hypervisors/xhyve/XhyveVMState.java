@@ -63,8 +63,7 @@ public class XhyveVMState extends VMStateBase {
 			throw new IllegalStateException("Can not power on virtual machine that is not off: " + _runtimeState.toString());
 		}
 
-		//String cmdline = "/Users/dwimsey/bin/xhyve";
-		String cmdline = "/usr/sbin/bhyve";
+		String cmdline = "/Users/dwimsey/bin/xhyve";
 
 		boolean validConfiguration = true;
 		cmdline += " -c " + _cpuCount;
