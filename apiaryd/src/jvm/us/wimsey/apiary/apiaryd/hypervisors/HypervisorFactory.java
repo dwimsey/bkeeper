@@ -2,8 +2,6 @@ package us.wimsey.apiary.apiaryd.hypervisors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.Logger;
-import us.wimsey.apiary.apiaryd.hypervisors.xhyve.XhyveHypervisorDriver;
 import us.wimsey.apiary.apiaryd.hypervisors.bhyve.BhyveHypervisorDriver;
 
 import java.util.Properties;
@@ -41,8 +39,6 @@ public class HypervisorFactory {
 				String osName = System.getProperty("os.name");
 				switch (osName) {
 					case "Mac OS X":
-						localHypervisorType = "xhyve";
-						break;
 					case "FreeBSD":
 						localHypervisorType = "bhyve";
 						break;
@@ -53,9 +49,6 @@ public class HypervisorFactory {
 				}
 			}
 			switch (localHypervisorType) {
-				case "xhyve":
-					localHypervisor = new XhyveHypervisorDriver(apiaryProperties);
-					break;
 				case "bhyve":
 					localHypervisor = new BhyveHypervisorDriver(apiaryProperties);
 					break;

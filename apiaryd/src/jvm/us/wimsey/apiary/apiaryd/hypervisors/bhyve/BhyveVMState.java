@@ -14,8 +14,23 @@ import java.util.concurrent.TimeUnit;
 public class BhyveVMState extends VMStateBase {
 	private static final Logger logger = LogManager.getLogger(BhyveVMState.class);
 
+	private String _cmdBase;
+
 	public BhyveVMState() {
 		super();
+		String osName = System.getProperty("os.name");
+		switch (osName) {
+			case "Mac OS X":
+				_cmdBase = "/Users/dwimsey/bin/xhyve";
+				break;
+			case "FreeBSD":
+				_cmdBase = "/usr/sbin/bhyve";
+				break;
+			default:
+				// make a guess
+				_cmdBase = "/usr/bin/env bhyve";
+				break;
+		}
 	}
 
 	@Override
@@ -63,8 +78,7 @@ public class BhyveVMState extends VMStateBase {
 			throw new IllegalStateException("Can not power on virtual machine that is not off: " + _runtimeState.toString());
 		}
 
-		//String cmdline = "/Users/dwimsey/bin/xhyve";
-		String cmdline = "/usr/sbin/bhyve";
+		String cmdline = _cmdBase;
 
 		boolean validConfiguration = true;
 		cmdline += " -c " + _cpuCount;
